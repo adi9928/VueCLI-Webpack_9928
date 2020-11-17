@@ -56,6 +56,9 @@
                             mdi-file
                         </v-icon>
                     </template>
+                    <template v-slot:[`item.checkbox`]="{ item }">
+                        <input type="checkbox" v-model="item.checked" @change="kenaCheck(item)">
+                    </template>
                 </v-data-table>
             </v-card>
             <v-card flat card-btn-padding class="ma-3" v-show="cardDetail" width="600px">
@@ -173,6 +176,22 @@
                 </v-card>
             </v-dialog>
             </div>
+            <v-card width="1600px" v-show="displayTugas">
+                <v-card-title>
+                    <span class="headline">
+                        Delete Multiple :
+                    </span>
+                    <v-spacer></v-spacer>
+                    <v-btn color="red" dark @click="deleteAll(0)">
+                        Delete All
+                    </v-btn>
+                </v-card-title>
+                <div v-for="todo in todos" :key="todo.task">
+                    <h5 class="ma-2 ml-4" v-if="todo.checked">
+                        {{todo.task}}
+                    </h5>
+                </div>
+            </v-card>
         </v-main>
     
 </template>
@@ -187,6 +206,8 @@
                 cardDetail: false,
                 isEdit: false,
                 index: null,
+                checked:false,
+                displayTugas: false,
                 tempItem:null,
                 headers: [
                     {
@@ -197,28 +218,36 @@
                     },
                     { text: "Priority", value: "priority" },
                     { text: "Actions", value: "actions" },
+                    { text: "", value: "checkbox" },
                 ],
                 todos: [
                     {
                         task: "bernafas",
                         priority: "Penting",
                         note: "huffttt",
+                        checked: false,
                     },
                     {
                         task: "nongkrong",
                         priority: "Tidak penting",
                         note: "bersama tman2",
+                        checked:false,
                     },
                     {
                         task: "masak",
                         priority: "Biasa",
                         note: "masak air 500ml",
+                        checked:false,
                     },
+                ],
+                deleteList:[
+
                 ],
                 formTodo: {
                     task: null,
                     priority: null,
                     note: null,
+                    checked: false,
                 },
                 tempTodo:{
                     task: "tes",
@@ -276,10 +305,27 @@
             },
             detail(item){
                 this.cardDetail = true;
+                
                 this.tempTodo.task = item.task;
                 this.tempTodo.priority = item.priority;
                 this.tempTodo.note = item.note;
                 this.tempItem=item;
+            },
+            kenaCheck(item){
+                this.displayTugas=true;
+                this.tempItem=item;
+            },
+             deleteAll(index){
+                for (index = 0; index < this.todos.length; index++){
+                    if(this.todos[index].checked){
+                        if(this.todos[index]==this.tempItem)
+                            this.cardDetail=false;
+                        this.todos.splice(index,1);
+                        index=-1;
+                        
+                    }
+                }
+                
             },
         },
     };
